@@ -3,7 +3,7 @@
 ## CRUD User Management Application
 
 This is a small Spring Boot REST API project with a basic HTML page as the frontend.  
-It lets you manage users — you can create, read, update, delete, and sort them.  
+It lets you manage users - you can create, read, update, delete, and sort them.  
 The data is stored in a MySQL database.
 
 > This app uses **Liquibase** for database migrations and version control.
@@ -32,7 +32,7 @@ Before running the app, make sure you have:
 - Java JDK 17 (or something similar)
 - Maven (to build and run the app)
 - MySQL Server installed and running
-- An IDE (like IntelliJ IDEA — I used that)
+- An IDE (like IntelliJ IDEA - I used that)
 - A modern web browser (for the frontend)
 
 ---
@@ -40,7 +40,7 @@ Before running the app, make sure you have:
 ## Database Setup
 
 The app uses **MySQL** as a database.  
-You don’t need to create tables manually — **Liquibase** will handle that automatically at startup using pre-defined changelogs.  
+You don’t need to create tables manually - **Liquibase** will handle that automatically at startup using pre-defined changelogs.  
 Just make sure MySQL is running on your system.
 
 ---

@@ -1,4 +1,4 @@
-# crud-user-app
+# CrudUserApp
 
 ## CRUD User Management Application
 

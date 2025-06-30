@@ -88,11 +88,11 @@ spring.jpa.hibernate.ddl-auto = none
 ```json
 {
   "id": 1,
-  "firstName": "John",
-  "lastName": "Doe",
+  "firstName": "Иван",
+  "lastName": "Иванов",
   "dateOfBirth": "1990-05-20",
   "phoneNumber": "0888123456",
-  "email": "john.doe@example.com"
+  "email": "ivanivanov@gmail.com"
 }
 ```
 

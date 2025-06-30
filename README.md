@@ -6,6 +6,8 @@ This is a small Spring Boot REST API project with a basic HTML page as the front
 It lets you manage users — you can create, read, update, delete, and sort them.  
 The data is stored in a MySQL database.
 
+> This app uses **Liquibase** for database migrations and version control.
+
 ---
 
 ## Table of Contents
@@ -38,14 +40,14 @@ Before running the app, make sure you have:
 ## Database Setup
 
 The app uses **MySQL** as a database.  
-You don’t need to create tables manually — Hibernate will do that automatically when the app starts.  
+You don’t need to create tables manually — **Liquibase** will handle that automatically at startup using pre-defined changelogs.  
 Just make sure MySQL is running on your system.
 
 ---
 
 ## Configuration
 
-You’ll need to set your own MySQL username and password in this file:  
+Before running the app, you’ll need to set your own MySQL username and password in this file:  
 `src/main/resources/application.properties`
 
 Here's what it looks like:
@@ -54,8 +56,10 @@ Here's what it looks like:
 spring.datasource.url = jdbc:mysql://localhost:3306/crud
 spring.datasource.username = your_mysql_username
 spring.datasource.password = your_mysql_password
-spring.jpa.hibernate.ddl-auto = update
+spring.jpa.hibernate.ddl-auto = none
 ```
+- Hibernate schema updates are disabled (ddl-auto=none) because Liquibase manages the schema.
+- 
 ## Running the Application
  Run from IntelliJ IDEA
 
@@ -98,28 +102,20 @@ spring.jpa.hibernate.ddl-auto = update
 
 - Represents the **data structure** and maps to the database table.
 - Contains user fields like `id`, `firstName`, `lastName`, `dateOfBirth`, `phoneNumber`, and `email`.
-- Uses JPA annotations to define how it connects to the database.
+- Uses JPA annotations.
 
 ---
 
 ### 2. Repository (`UserRepository`)
 
 ```java
-package com.example.CrudUserApp.repository;
-
-import com.example.CrudUserApp.model.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 ...
 }
 ```
-- Interface that extends `JpaRepository`.
-- Handles **database operations** like save, find, update, and delete without writing SQL.
-- Example: `findAll()`, `findById()`, `deleteById()` come from here.
-- Spring Data JPA automatically provides mmplementation.
+- Extends `JpaRepository`.
+- Provides built-in methods like findAll(), findById(), deleteById(), etc.
 
 ---
 
@@ -134,13 +130,6 @@ The service layer contains the logic and communicates between the controller and
 Defines the operations that the user service must provide:
 
 ```java
-package com.example.CrudUserApp.service;
-
-import com.example.CrudUserApp.dto.UserDto;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
-
 public interface UserService {
     List<UserDto> getAllUsers();
     UserDto createUser(UserDto userDto);
@@ -163,12 +152,9 @@ public interface UserService {
 
 ### 4. Controller (`UserController`)
 
-The controller layer handles HTTP requests and maps them to service calls. It exposes REST API endpoints for user management.
-
-- Handles **HTTP requests** (like GET, POST, PUT, DELETE).
+- Handles **REST API** endpoints.
 - Maps URLs (like `/users`) to service methods.
 - Returns responses (JSON data) to the frontend or API client.
-- Acts as the bridge between frontend and backend logic.
 
 ---
 
@@ -185,22 +171,28 @@ Open the `index.html` file in your browser to interact with the app.
 
 You can:
 
-- View all users
-- Select and view a user by ID
+- View, add, update, delete, and sort users.
 - Sort by last name or date of birth (ASC/DESC)
-- Add new users through a form
-- Edit and delete users directly from the table
+- Use interactive table and forms.
 
 **Buttons are color-coded for clarity:**
 
 - **Update** → 🟦 blue  
 - **Delete** → 🟥 red
 
-## Notes
-- This project was made using Spring Initializr.
-- It uses Spring Boot, Spring Data JPA, and Hibernate.
-- Hibernate handles the database schema automatically (ddl-auto=update).
-- The frontend is just a simple HTML page using JavaScript fetch to talk to the backend.
+## ## Notes
+
+Project created using **Spring Initializr**.
+
+### Uses:
+
+- **Spring Boot**
+- **Spring Data JPA**
+- **Hibernate** (with **Liquibase** managing schema)
+
+### Additional Info:
+
+- **Liquibase** is used for version-controlled database migrations.
 
 ## Screenshots
 Here’s what the frontend looks like:

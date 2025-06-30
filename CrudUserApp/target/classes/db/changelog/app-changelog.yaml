@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/scripts/create_users_table.sql
+  - include:
+      file: db/changelog/scripts/insert_users.sql

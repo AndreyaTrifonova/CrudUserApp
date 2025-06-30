@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Management Application</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+    <style>
+        /* Reset and base */
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Inter', sans-serif;
+          background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+          margin: 0;
+          padding: 20px 30px;
+          min-height: 100vh;
+          color: #2c3e50;
+        }
+
+        h2 {
+          text-align: center;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #1f2937;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .controls {
+          max-width: 960px;
+          margin: 0 auto 25px;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 12px;
+        }
+
+        .controls > * {
+          font-size: 15px;
+          padding: 8px 12px;
+          border-radius: 6px;
+          border: 1.5px solid #cbd5e1;
+          transition: border-color 0.3s ease;
+        }
+
+        .controls > *:focus {
+          outline: none;
+          border-color: #2563eb;
+          box-shadow: 0 0 5px #2563ebaa;
+        }
+
+        button {
+          background-color: #2563eb;
+          color: white;
+          border: none;
+          cursor: pointer;
+          font-weight: 600;
+          transition: background-color 0.3s ease;
+        }
+
+        button:hover:not(.btn-delete) {
+          background-color: #1e40af;
+        }
+
+        table {
+          width: 100%;
+          max-width: 960px;
+          margin: 0 auto;
+          border-collapse: collapse;
+          background-color: white;
+          border-radius: 10px;
+          overflow: hidden;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        thead {
+          background-color: #e0e7ff;
+        }
+
+        th, td {
+          padding: 14px 18px;
+          text-align: left;
+          font-size: 14px;
+        }
+
+        th {
+          font-weight: 600;
+          color: #374151;
+        }
+
+        tbody tr:hover {
+          background-color: #f3f4f6;
+        }
+
+        .btn-delete {
+          background: #e53e3e;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+          margin-left: 6px;
+        }
+
+        .btn-delete:hover {
+          background: #9b2c2c;
+        }
+
+        .btn-update {
+          background: #3b82f6;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .btn-update:hover {
+          background: #2563eb;
+        }
+
+        .message {
+          text-align: center;
+          padding: 20px;
+          font-style: italic;
+          color: #6b7280;
+        }
+
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+         margin: 0;
+        }
+
+        /* Remove arrows in number input (Firefox) */
+        input[type=number] {
+        -moz-appearance: textfield;
+         }
+
+        /* Modal styling */
+        #modalOverlay {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(31, 41, 55, 0.7);
+          z-index: 1000;
+          justify-content: center;
+          align-items: center;
+        }
+
+        #updateModal {
+          background: white;
+          padding: 24px 30px;
+          border-radius: 12px;
+          max-width: 420px;
+          width: 90%;
+          box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+          position: relative;
+        }
+
+        #updateModal h3 {
+          margin-top: 0;
+          margin-bottom: 20px;
+          font-weight: 700;
+          color: #1e293b;
+        }
+
+        #updateModal label {
+          display: block;
+          margin-bottom: 6px;
+          font-weight: 600;
+          font-size: 14px;
+          color: #374151;
+        }
+
+        #updateModal input {
+          width: 100%;
+          padding: 8px 10px;
+          font-size: 14px;
+          margin-bottom: 15px;
+          border: 1.5px solid #cbd5e1;
+          border-radius: 6px;
+          transition: border-color 0.3s ease;
+        }
+
+        #updateModal input:focus {
+          outline: none;
+          border-color: #2563eb;
+          box-shadow: 0 0 5px #2563ebaa;
+        }
+
+        #modalButtons {
+          display: flex;
+          justify-content: flex-end;
+          gap: 12px;
+        }
+
+        #modalButtons button {
+          padding: 8px 16px;
+          font-weight: 600;
+          border-radius: 6px;
+          border: none;
+          cursor: pointer;
+        }
+
+        #saveBtn {
+          background-color: #2563eb;
+          color: white;
+        }
+
+        #saveBtn:hover {
+          background-color: #1e40af;
+        }
+
+        #cancelBtn {
+          background-color: #9ca3af;
+          color: white;
+        }
+
+        #cancelBtn:hover {
+          background-color: #6b7280;
+        }
+
+        /* Reminder for sorting */
+        #sortingReminder {
+          max-width: 960px;
+          margin: 15px auto;
+          font-style: italic;
+          color: #4b5563;
+          font-size: 14px;
+          text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h2>User Management Application</h2>
+
+<div class="controls" aria-label="Controls for user management">
+
+    <button onclick="loadAllUsers()" aria-label="Show all users">Show All Users</button>
+
+    <input type="number" id="userIdInput" placeholder="Enter User ID" aria-label="User ID input" />
+    <button onclick="loadUserById()" aria-label="Get user by ID">Get User By ID</button>
+
+    <select id="sortBy" aria-label="Sort users by field">
+        <option value="lastName">Sort by Last Name</option>
+        <option value="dateOfBirth">Sort by Date of Birth</option>
+    </select>
+
+    <select id="sortDir" aria-label="Sort direction">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+    </select>
+
+    <button onclick="loadSorted()" aria-label="Sort users">Sort</button>
+
+    <button onclick="openAddModal()" aria-label="Add new user">Add New User</button>
+</div>
+
+<div id="sortingReminder">
+    * For update, you can sort users by Last Name or Date of Birth, ascending or descending.
+</div>
+
+<table aria-label="User list">
+    <thead>
+    <tr>
+        <th>ID</th><th>First Name</th><th>Last Name</th><th>Date of Birth</th><th>Email</th><th>Phone</th><th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="userBody">
+    <tr><td colspan="7" class="message">No users loaded.</td></tr>
+    </tbody>
+</table>
+
+<!-- Update Modal -->
+<div id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div id="updateModal">
+        <h3 id="modalTitle">Update User</h3>
+        <form id="updateForm" onsubmit="submitUpdate(event)">
+            <input type="hidden" id="updateId" />
+            <label for="updateFirstName">First Name</label>
+            <input type="text" id="updateFirstName" required />
+
+            <label for="updateLastName">Last Name</label>
+            <input type="text" id="updateLastName" required />
+
+            <label for="updateDob">Date of Birth</label>
+            <input type="date" id="updateDob" required />
+
+            <label for="updateEmail">Email</label>
+            <input type="email" id="updateEmail" required />
+
+            <label for="updatePhone">Phone Number</label>
+            <input type="tel" id="updatePhone" />
+
+            <div id="modalButtons">
+                <button type="submit" id="saveBtn">Save</button>
+                <button type="button" id="cancelBtn" onclick="closeModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div id="addModalOverlay" style="display:none; position: fixed; inset: 0; background: rgba(31, 41, 55, 0.7); z-index: 1000; justify-content: center; align-items: center;" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+    <div style="background: white; padding: 24px 30px; border-radius: 12px; max-width: 420px; width: 90%; box-shadow: 0 8px 25px rgba(0,0,0,0.15); position: relative;">
+        <h3 id="addModalTitle">Add New User</h3>
+        <form id="addForm" onsubmit="submitAdd(event)">
+            <label for="addFirstName">First Name</label>
+            <input type="text" id="addFirstName" required />
+
+            <label for="addLastName">Last Name</label>
+            <input type="text" id="addLastName" required />
+
+            <label for="addDob">Date of Birth</label>
+            <input type="date" id="addDob" required />
+
+            <label for="addEmail">Email</label>
+            <input type="email" id="addEmail" required />
+
+            <label for="addPhone">Phone Number</label>
+            <input type="tel" id="addPhone" />
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="submit" style="background-color: #2563eb; color: white; padding: 8px 16px; font-weight: 600; border-radius: 6px; border: none; cursor: pointer;">Add</button>
+                <button type="button" style="background-color: #9ca3af; color: white; padding: 8px 16px; font-weight: 600; border-radius: 6px; border: none; cursor: pointer;" onclick="closeAddModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    const API_BASE = 'http://localhost:8080/users';
+
+    const addModalOverlay = document.getElementById('addModalOverlay');
+
+function openAddModal() {
+  addModalOverlay.style.display = 'flex';
+  // Clear form inputs
+  document.getElementById('addForm').reset();
+}
+
+function closeAddModal() {
+  addModalOverlay.style.display = 'none';
+}
+
+async function submitAdd(event) {
+  event.preventDefault();
+
+  const newUser = {
+    firstName: document.getElementById('addFirstName').value.trim(),
+    lastName: document.getElementById('addLastName').value.trim(),
+    dateOfBirth: document.getElementById('addDob').value,
+    email: document.getElementById('addEmail').value.trim(),
+    phoneNumber: document.getElementById('addPhone').value.trim() || null
+  };
+
+  try {
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newUser)
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => null);
+      throw new Error(errorData?.message || 'Failed to add user');
+    }
+
+    alert('User added successfully!');
+    closeAddModal();
+    loadAllUsers(); // Refresh list
+  } catch (err) {
+    alert('Error adding user: ' + err.message);
+  }
+}
+
+    // Render users in table
+    function renderUsers(users) {
+      const body = document.getElementById('userBody');
+      body.innerHTML = '';
+
+      if (!users || users.length === 0) {
+        body.innerHTML = '<tr><td colspan="7" class="message">No users found.</td></tr>';
+        return;
+      }
+
+      users.forEach(user => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${user.id}</td>
+          <td>${user.firstName}</td>
+          <td>${user.lastName}</td>
+          <td>${user.dateOfBirth}</td>
+          <td>${user.email}</td>
+          <td>${user.phoneNumber || ''}</td>
+          <td>
+            <button class="btn-update" aria-label="Update user ${user.firstName} ${user.lastName}" onclick="openUpdateModal(${user.id})">Update</button>
+            <button class="btn-delete" aria-label="Delete user ${user.firstName} ${user.lastName}" onclick="deleteUser(${user.id})">Delete</button>
+          </td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    // Fetch all users - handles pagination if API returns paged results
+    async function loadAllUsers() {
+  try {
+    const userTableBody = document.getElementById('userBody');
+    userTableBody.innerHTML = '<tr><td colspan="7" class="message">Loading users...</td></tr>';
+
+    let allUsers = [];
+    let page = 0;
+    const pageSize = 50;  // Adjust based on API default
+    let hasMore = true;
+
+    while (hasMore) {
+      const res = await fetch(`${API_BASE}?page=${page}&size=${pageSize}&sortBy=id&sortDir=asc`);
+      if (!res.ok) throw new Error('Failed to fetch users.');
+      const data = await res.json();
+      const users = data.content || data; // fallback to data if no content
+      allUsers = allUsers.concat(users);
+
+      if (data.totalPages !== undefined) {
+        page++;
+        hasMore = page < data.totalPages;
+      } else {
+        hasMore = false;
+      }
+    }
+    renderUsers(allUsers);
+  } catch (err) {
+    alert('Error loading users: ' + err.message);
+  }
+}
+
+    async function loadUserById() {
+      const id = document.getElementById('userIdInput').value.trim();
+      if (!id) {
+        alert("Enter a user ID.");
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/${id}`);
+        if (!res.ok) throw new Error("User not found");
+        const user = await res.json();
+        renderUsers([user]);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function loadSorted() {
+  try {
+    const sortBy = document.getElementById('sortBy').value;
+    const sortDir = document.getElementById('sortDir').value;
+
+    const userTableBody = document.getElementById('userBody');
+    userTableBody.innerHTML = '<tr><td colspan="7" class="message">Loading users...</td></tr>';
+
+    let allUsers = [];
+    let page = 0;
+    const pageSize = 50;
+    let hasMore = true;
+
+    while (hasMore) {
+      const res = await fetch(`${API_BASE}?page=${page}&size=${pageSize}&sortBy=${sortBy}&sortDir=${sortDir}`);
+      if (!res.ok) throw new Error('Failed to fetch sorted users.');
+      const data = await res.json();
+      const users = data.content || data;
+      allUsers = allUsers.concat(users);
+
+      if (data.totalPages !== undefined) {
+        page++;
+        hasMore = page < data.totalPages;
+      } else {
+        hasMore = false;
+      }
+    }
+
+    renderUsers(allUsers);
+  } catch (err) {
+    alert('Error loading users: ' + err.message);
+  }
+}
+
+
+    async function deleteUser(id) {
+      if (!confirm("Are you sure you want to delete this user?")) return;
+      try {
+        const res = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Delete failed');
+        alert("User deleted.");
+        await loadAllUsers();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    // Modal handling
+    const modalOverlay = document.getElementById('modalOverlay');
+    const updateForm = document.getElementById('updateForm');
+    const updateIdInput = document.getElementById('updateId');
+    const updateFirstName = document.getElementById('updateFirstName');
+    const updateLastName = document.getElementById('updateLastName');
+    const updateDob = document.getElementById('updateDob');
+    const updateEmail = document.getElementById('updateEmail');
+    const updatePhone = document.getElementById('updatePhone');
+
+    async function openUpdateModal(userId) {
+      try {
+        const res = await fetch(`${API_BASE}/${userId}`);
+        if (!res.ok) throw new Error('Failed to fetch user data');
+        const user = await res.json();
+
+        updateIdInput.value = user.id;
+        updateFirstName.value = user.firstName || '';
+        updateLastName.value = user.lastName || '';
+        updateDob.value = user.dateOfBirth || '';
+        updateEmail.value = user.email || '';
+        updatePhone.value = user.phoneNumber || '';
+
+        modalOverlay.style.display = 'flex';
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function closeModal() {
+      modalOverlay.style.display = 'none';
+      updateForm.reset();
+    }
+
+    async function submitUpdate(event) {
+      event.preventDefault();
+      const id = updateIdInput.value;
+      const updatedUser = {
+        firstName: updateFirstName.value.trim(),
+        lastName: updateLastName.value.trim(),
+        dateOfBirth: updateDob.value,
+        email: updateEmail.value.trim(),
+        phoneNumber: updatePhone.value.trim() || null
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedUser)
+        });
+        if (!res.ok) throw new Error('Update failed');
+        alert('User updated successfully');
+        closeModal();
+        await loadAllUsers();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    // Load all users on page load
+    window.onload = loadAllUsers;
+
+    // Close modal on outside click
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
+    });
+
+    // Allow pressing Escape to close modal
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
+        closeModal();
+      }
+    });
+</script>
+
+</body>
+</html>

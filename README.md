@@ -39,9 +39,10 @@ Before running the app, make sure you have:
 
 ## Database Setup
 
-The app uses **MySQL** as a database.  
-You don’t need to create tables manually - **Liquibase** will handle that automatically at startup using pre-defined changelogs.  
-Just make sure MySQL is running on your system.
+This app uses **MySQL**.  
+You **don’t need to create tables manually** – Liquibase will auto-apply the changelogs.  
+You just need to create an empty schema named `crud`.  
+Make sure MySQL is running before launching the app.
 
 ---
 
@@ -180,7 +181,7 @@ You can:
 - **Update** → 🟦 blue  
 - **Delete** → 🟥 red
 
-## ## Notes
+## Notes
 
 Project created using **Spring Initializr**.
 
